@@ -1,0 +1,29 @@
+---
+title: "ADS 503 Team 4: Predicting Article Shares"
+output: html_notebook
+---
+
+# Load Data
+```{r}
+df <- read.csv("Datasets/OnlineNewsPopularity.csv")
+dim(df)
+```
+The dataset has 39,644 samples and 61 variables. 
+
+# Missing Data
+```{r}
+na.by.col <- apply(df, 2, function(x) sum(is.na(x)))
+any(na.by.col > 0)
+```
+None of the variables are missing any data. 
+
+
+
+
+
+
+
+
+
+
+
