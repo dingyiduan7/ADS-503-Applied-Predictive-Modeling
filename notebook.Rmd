@@ -32,7 +32,12 @@ names(X)[zero.var.cols]
 kw_min_max <- X[, "kw_min_max"]
 hist(kw_min_max)
 ```
-kw_min_max is the only predictor with near-zero variance.  
+
+kw_min_max is the only predictor with near-zero variance. Let's remove it.
+```{r}
+X <- X[, names(X) != "kw_min_max"]
+```
+
 
 # Predictor Correlations
 ```{r}
@@ -45,9 +50,44 @@ corrplot(
   order = "hclust",
   tl.pos = "n"
 )
+high.cor <- findCorrelation(cor.matrix, cutoff = .75) # variables contributing to high pairwise correlations 
+names(X)[high.cor]
 ```
 
-There are some strong correlations between predictors. 
+There are 10 predictors contributing to high pairwise correlations. Let's remove them to avoid multicolinearity issues. 
+```{r}
+X <- X[, -high.cor]
+cor.matrix.filtered <- cor(X)
+corrplot(
+  cor.matrix.filtered,
+  method = "square",
+  type = "upper",
+  order = "hclust",
+  tl.pos = "n"
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
