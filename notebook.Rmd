@@ -24,6 +24,16 @@ y <- df$shares  # shares is the target variable
 X <- df[, names(df) != "shares"]
 ```
 
+# Near-Zero Variance Predictors
+```{r}
+library(caret)
+zero.var.cols <- nearZeroVar(X)
+names(X)[zero.var.cols]
+kw_min_max <- X[, "kw_min_max"]
+hist(kw_min_max)
+```
+kw_min_max is the only predictor with near-zero variance.  
+
 # Predictor Correlations
 ```{r}
 library(corrplot)
