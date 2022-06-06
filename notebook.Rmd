@@ -17,8 +17,24 @@ any(na.by.col > 0)
 ```
 None of the variables are missing any data. 
 
+# Predictor Correlations
+```{r}
+library(corrplot)
+df <- df[, names(df) != "url"] # drop the url column, which functions as a sample ID
+y <- df$shares  # shares is the target variable 
+X <- df[, names(df) != "shares"]
 
+cor.matrix <- cor(X)
+corrplot(
+  cor.matrix, 
+  method = "square", 
+  type = "upper", 
+  order = "hclust",
+  tl.pos = "n"
+)
+```
 
+There are some strong correlations between predictors. 
 
 
 
