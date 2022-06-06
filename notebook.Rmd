@@ -17,13 +17,16 @@ any(na.by.col > 0)
 ```
 None of the variables are missing any data. 
 
-# Predictor Correlations
+# Define Target and Predictors
 ```{r}
-library(corrplot)
 df <- df[, names(df) != "url"] # drop the url column, which functions as a sample ID
 y <- df$shares  # shares is the target variable 
 X <- df[, names(df) != "shares"]
+```
 
+# Predictor Correlations
+```{r}
+library(corrplot)
 cor.matrix <- cor(X)
 corrplot(
   cor.matrix, 

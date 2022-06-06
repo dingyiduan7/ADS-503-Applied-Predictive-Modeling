@@ -1799,6 +1799,18 @@ Shares</h1>
 <!-- rnb-text-begin -->
 <p>None of the variables are missing any data.</p>
 </div>
+<div id="define-target-and-predictors" class="section level1">
+<h1>Define Target and Predictors</h1>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYgPC0gZGZbLCBuYW1lcyhkZikgIT0gXCJ1cmxcIl0gIyBkcm9wIHRoZSB1cmwgY29sdW1uLCB3aGljaCBmdW5jdGlvbnMgYXMgYSBzYW1wbGUgSURcbnkgPC0gZGYkc2hhcmVzICAjIHNoYXJlcyBpcyB0aGUgdGFyZ2V0IHZhcmlhYmxlIFxuWCA8LSBkZlssIG5hbWVzKGRmKSAhPSBcInNoYXJlc1wiXVxuYGBgIn0= -->
+<pre class="r"><code>df &lt;- df[, names(df) != &quot;url&quot;] # drop the url column, which functions as a sample ID
+y &lt;- df$shares  # shares is the target variable 
+X &lt;- df[, names(df) != &quot;shares&quot;]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
 <div id="predictor-correlations" class="section level1">
 <h1>Predictor Correlations</h1>
 <!-- rnb-text-end -->
@@ -1827,7 +1839,7 @@ corrplot(
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFEUyA1MDMgVGVhbSA0OiBQcmVkaWN0aW5nIEFydGljbGUgU2hhcmVzIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQotLS0NCg0KIyBMb2FkIERhdGENCmBgYHtyfQ0KZGYgPC0gcmVhZC5jc3YoIkRhdGFzZXRzL09ubGluZU5ld3NQb3B1bGFyaXR5LmNzdiIpDQpkaW0oZGYpDQpgYGANClRoZSBkYXRhc2V0IGhhcyAzOSw2NDQgc2FtcGxlcyBhbmQgNjEgdmFyaWFibGVzLiANCg0KIyBNaXNzaW5nIERhdGENCmBgYHtyfQ0KbmEuYnkuY29sIDwtIGFwcGx5KGRmLCAyLCBmdW5jdGlvbih4KSBzdW0oaXMubmEoeCkpKQ0KYW55KG5hLmJ5LmNvbCA+IDApDQpgYGANCk5vbmUgb2YgdGhlIHZhcmlhYmxlcyBhcmUgbWlzc2luZyBhbnkgZGF0YS4gDQoNCiMgUHJlZGljdG9yIENvcnJlbGF0aW9ucw0KYGBge3J9DQpsaWJyYXJ5KGNvcnJwbG90KQ0KZGYgPC0gZGZbLCBuYW1lcyhkZikgIT0gInVybCJdICMgZHJvcCB0aGUgdXJsIGNvbHVtbiwgd2hpY2ggZnVuY3Rpb25zIGFzIGEgc2FtcGxlIElEDQp5IDwtIGRmJHNoYXJlcyAgIyBzaGFyZXMgaXMgdGhlIHRhcmdldCB2YXJpYWJsZSANClggPC0gZGZbLCBuYW1lcyhkZikgIT0gInNoYXJlcyJdDQoNCmNvci5tYXRyaXggPC0gY29yKFgpDQpjb3JycGxvdCgNCiAgY29yLm1hdHJpeCwgDQogIG1ldGhvZCA9ICJzcXVhcmUiLCANCiAgdHlwZSA9ICJ1cHBlciIsIA0KICBvcmRlciA9ICJoY2x1c3QiLA0KICB0bC5wb3MgPSAibiINCikNCmBgYA0KDQpUaGVyZSBhcmUgc29tZSBzdHJvbmcgY29ycmVsYXRpb25zIGJldHdlZW4gcHJlZGljdG9ycy4gDQoNCg0KDQoNCg0KDQoNCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFEUyA1MDMgVGVhbSA0OiBQcmVkaWN0aW5nIEFydGljbGUgU2hhcmVzIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQotLS0NCg0KIyBMb2FkIERhdGENCmBgYHtyfQ0KZGYgPC0gcmVhZC5jc3YoIkRhdGFzZXRzL09ubGluZU5ld3NQb3B1bGFyaXR5LmNzdiIpDQpkaW0oZGYpDQpgYGANClRoZSBkYXRhc2V0IGhhcyAzOSw2NDQgc2FtcGxlcyBhbmQgNjEgdmFyaWFibGVzLiANCg0KIyBNaXNzaW5nIERhdGENCmBgYHtyfQ0KbmEuYnkuY29sIDwtIGFwcGx5KGRmLCAyLCBmdW5jdGlvbih4KSBzdW0oaXMubmEoeCkpKQ0KYW55KG5hLmJ5LmNvbCA+IDApDQpgYGANCk5vbmUgb2YgdGhlIHZhcmlhYmxlcyBhcmUgbWlzc2luZyBhbnkgZGF0YS4gDQoNCiMgRGVmaW5lIFRhcmdldCBhbmQgUHJlZGljdG9ycw0KYGBge3J9DQpkZiA8LSBkZlssIG5hbWVzKGRmKSAhPSAidXJsIl0gIyBkcm9wIHRoZSB1cmwgY29sdW1uLCB3aGljaCBmdW5jdGlvbnMgYXMgYSBzYW1wbGUgSUQNCnkgPC0gZGYkc2hhcmVzICAjIHNoYXJlcyBpcyB0aGUgdGFyZ2V0IHZhcmlhYmxlIA0KWCA8LSBkZlssIG5hbWVzKGRmKSAhPSAic2hhcmVzIl0NCmBgYA0KDQojIFByZWRpY3RvciBDb3JyZWxhdGlvbnMNCmBgYHtyfQ0KbGlicmFyeShjb3JycGxvdCkNCmNvci5tYXRyaXggPC0gY29yKFgpDQpjb3JycGxvdCgNCiAgY29yLm1hdHJpeCwgDQogIG1ldGhvZCA9ICJzcXVhcmUiLCANCiAgdHlwZSA9ICJ1cHBlciIsIA0KICBvcmRlciA9ICJoY2x1c3QiLA0KICB0bC5wb3MgPSAibiINCikNCmBgYA0KDQpUaGVyZSBhcmUgc29tZSBzdHJvbmcgY29ycmVsYXRpb25zIGJldHdlZW4gcHJlZGljdG9ycy4gDQoNCg0KDQoNCg0KDQoNCg0K</div>
 
 
 
