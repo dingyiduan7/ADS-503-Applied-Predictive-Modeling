@@ -24,6 +24,29 @@ y <- df$shares  # shares is the target variable
 X <- df[, names(df) != "shares"]
 ```
 
+# Binary Predictors
+```{r}
+unique(apply(X, 2, typeof)) # check predictor data types 
+
+is.binary <- function(x) { # function to check whether or not a variable is binary 
+  n.unique <- length(unique(x))
+  min <- min(x)
+  max <- max(x)
+  if (n.unique == 2 & min == 0 & max == 1) {
+    return(TRUE)
+  }
+  else {
+    return(FALSE)
+  }
+}
+
+binary.cols <- names(X)[apply(X, 2, is.binary)]
+X.binary <- X[, binary.cols]
+X.non.binary <- X[, !names(X) %in% binary.cols]
+binary.cols
+```
+All predictors are of data type double. 14 of them are binary variables. 
+
 # Near-Zero Variance Predictors
 ```{r}
 library(caret)
@@ -38,11 +61,11 @@ kw_min_max is the only predictor with near-zero variance. Let's remove it.
 X <- X[, names(X) != "kw_min_max"]
 ```
 
-
 # Predictor Correlations
+## Non-Binary Predictors
 ```{r}
 library(corrplot)
-cor.matrix <- cor(X)
+cor.matrix <- cor(X.non.binary)
 corrplot(
   cor.matrix, 
   method = "square", 
@@ -51,18 +74,17 @@ corrplot(
   tl.pos = "n"
 )
 high.cor <- findCorrelation(cor.matrix, cutoff = .75) # variables contributing to high pairwise correlations 
-names(X)[high.cor]
+length(names(X.non.binary)[high.cor])
 ```
 
-There are 10 predictors contributing to high pairwise correlations. Let's remove them to avoid multicolinearity issues. 
+There are 8 non-binary predictors contributing to high pairwise correlations. Let's remove them to avoid multicolinearity issues. 
 ```{r}
-X <- X[, -high.cor]
-cor.matrix.filtered <- cor(X)
+X.non.binary <- X.non.binary[, -high.cor]
+cor.matrix.filtered <- cor(X.non.binary)
 corrplot(
   cor.matrix.filtered,
   method = "square",
   type = "upper",
-  order = "hclust",
   tl.pos = "n"
 )
 ```
