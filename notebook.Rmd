@@ -24,6 +24,25 @@ y <- df$shares  # shares is the target variable
 X <- df[, names(df) != "shares"]
 ```
 
+# Target Distribution
+```{r}
+summary(y)
+hist(y)
+boxplot(y)
+```
+
+The target distribution is highly right-skewed. Let's try log transforming it. 
+```{r}
+hist(log(y))
+boxplot(log(y))
+```
+
+The log of the target is much less skewed. Let's apply the log transformation. 
+```{r}
+y <- log(y)
+```
+
+
 # Binary Predictors
 ```{r}
 unique(apply(X, 2, typeof)) # check predictor data types 
@@ -125,7 +144,6 @@ Let's update our master predictor matrix to only retain the non-redundant predic
 cols.to.keep <- c(names(X.non.binary), names(X.binary))
 X <- X[, names(X) %in% cols.to.keep] 
 ```
-
 
 
 
