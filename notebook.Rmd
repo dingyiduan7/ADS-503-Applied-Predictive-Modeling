@@ -145,6 +145,15 @@ cols.to.keep <- c(names(X.non.binary), names(X.binary))
 X <- X[, names(X) %in% cols.to.keep] 
 ```
 
+# Split the Data
+```{r}
+set.seed(100)
+trainingRows <- createDataPartition(y, p = .80,  list = FALSE)
+y.train <- y[trainingRows]
+y.test <- y[-trainingRows]
+X.train <- X[trainingRows, ]
+X.test <- X[-trainingRows, ]
+```
 
 
 
