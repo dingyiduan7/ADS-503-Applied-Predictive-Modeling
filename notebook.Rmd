@@ -92,7 +92,7 @@ corrplot(
   order = "hclust",
   tl.pos = "n"
 )
-high.cor <- findCorrelation(cor.matrix, cutoff = .75) # variables contributing to high pairwise correlations 
+high.cor <- findCorrelation(cor.matrix, cutoff = .7) # variables contributing to high pairwise correlations 
 length(names(X.non.binary)[high.cor])
 ```
 
@@ -117,14 +117,14 @@ corrplot(
   type = "upper", 
   order = "hclust"
 )
-high.cor <- findCorrelation(cor.matrix, cutoff = .75) # variables contributing to high pairwise correlations 
+high.cor <- findCorrelation(cor.matrix, cutoff = .7) # variables contributing to high pairwise correlations 
 length(names(X.binary)[high.cor])
 ```
 
 None of the binary predictors contribute to pairwise correlations greater than .75. However, is_weekend is redundant because it will always be true when weekday_is_saturday or weekday_is_sunday is true. Furthermore, there is a binary indicator for every day of the week, so we need to remove one to avoid the dummy variable trap. 
 
 ```{r}
-X.binary <- X.binary[, !names(X.binary) %in% c("is_weekend", "weekday_is_sunday")]
+X.binary <- X.binary[, names(X.binary) != "weekday_is_sunday"]
 ```
 Let's also check the channel variables for the dummy trap. 
 ```{r}
@@ -144,6 +144,7 @@ Let's update our master predictor matrix to only retain the non-redundant predic
 cols.to.keep <- c(names(X.non.binary), names(X.binary))
 X <- X[, names(X) %in% cols.to.keep] 
 ```
+
 
 
 
