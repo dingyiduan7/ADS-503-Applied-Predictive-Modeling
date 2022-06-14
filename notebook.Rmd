@@ -153,8 +153,9 @@ y.train <- y[trainingRows]
 y.test <- y[-trainingRows]
 X.train <- X[trainingRows, ]
 X.test <- X[-trainingRows, ]
+idx <- createFolds(y.train, returnTrain = TRUE)
+ctrl <- trainControl(method = "cv", index = idx)
 ```
-
 
 
 
