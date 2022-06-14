@@ -96,7 +96,7 @@ high.cor <- findCorrelation(cor.matrix, cutoff = .7) # variables contributing to
 length(names(X.non.binary)[high.cor])
 ```
 
-There are 8 non-binary predictors contributing to high pairwise correlations. Let's remove them to avoid multicolinearity issues. 
+There are 12 non-binary predictors contributing to high pairwise correlations. Let's remove them to avoid multicolinearity issues. 
 ```{r}
 X.non.binary <- X.non.binary[, -high.cor]
 cor.matrix.filtered <- cor(X.non.binary)
@@ -121,7 +121,7 @@ high.cor <- findCorrelation(cor.matrix, cutoff = .7) # variables contributing to
 length(names(X.binary)[high.cor])
 ```
 
-None of the binary predictors contribute to pairwise correlations greater than .75. However, is_weekend is redundant because it will always be true when weekday_is_saturday or weekday_is_sunday is true. Furthermore, there is a binary indicator for every day of the week, so we need to remove one to avoid the dummy variable trap. 
+One of the binary predictors contributes to pairwise correlations greater than .70. Furthermore, there is a binary indicator for every day of the week, so we need to remove one to avoid the dummy variable trap. 
 
 ```{r}
 X.binary <- X.binary[, names(X.binary) != "weekday_is_sunday"]
