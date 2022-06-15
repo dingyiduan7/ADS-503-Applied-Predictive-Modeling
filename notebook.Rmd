@@ -157,7 +157,30 @@ idx <- createFolds(y.train, returnTrain = TRUE)
 ctrl <- trainControl(method = "cv", index = idx)
 ```
 
+# Modeling 
+## CART 
+```{r}
+cart <- train(
+  x = X.train,
+  y = y.train,
+  trControl = ctrl,
+  preProcess = c("center", "scale"),
+  method = "rpart",
+  tuneGrid = expand.grid(cp = seq(0.001, 0.1, 0.001))
+)
+cart
+plot(cart)
+```
 
+```{r}
+library(Metrics)
+pred.cart <- predict(cart, X.test)
+rmse(y.test, pred.cart)
+hist(pred.cart)
+plot(y.test, pred.cart)
+resid.cart <- pred.cart - y.test
+hist(resid.cart)
+```
 
 
 
