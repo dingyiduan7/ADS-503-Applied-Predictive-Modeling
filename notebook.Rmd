@@ -182,7 +182,23 @@ resid.cart <- pred.cart - y.test
 hist(resid.cart)
 ```
 
+## Random Forest
+```{r}
+library(randomForest)
+rf.grid <- expand.grid(mtry = seq(2, ncol(X.train), 10))
 
+set.seed(100)
+rf <- train(
+  x = X.train,
+  y = y.train,
+  trControl = ctrl,
+  preProcess = c("center", "scale"),
+  method = "rf",
+  tuneGrid = rf.grid
+)
+rf
+plot(rf)
+```
 
 
 
