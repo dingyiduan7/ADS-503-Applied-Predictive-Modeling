@@ -118,12 +118,13 @@ corrplot(
   order = "hclust"
 )
 high.cor <- findCorrelation(cor.matrix, cutoff = .7) # variables contributing to high pairwise correlations 
-length(names(X.binary)[high.cor])
+names(X.binary)[high.cor]
 ```
 
 One of the binary predictors contributes to pairwise correlations greater than .70. Furthermore, there is a binary indicator for every day of the week, so we need to remove one to avoid the dummy variable trap. 
 
 ```{r}
+X.binary <- X.binary[, -high.cor]
 X.binary <- X.binary[, names(X.binary) != "weekday_is_sunday"]
 ```
 Let's also check the channel variables for the dummy trap. 
@@ -196,6 +197,41 @@ hist(pred.cart)
 plot(y.test, pred.cart)
 resid.cart <- pred.cart - y.test
 hist(resid.cart)
+```
+
+## Bagged CART
+```{r}
+set.seed(100)
+treebag <- train(
+  x = X.train,
+  y = y.train,
+  trControl = ctrl,
+  preProcess = c("center", "scale"),
+  method = "treebag"
+)
+treebag
+```
+
+```{r}
+pred.treebag <- predict(treebag, X.test)
+rmse(y.test, pred.treebag)
+hist(pred.treebag)
+plot(y.test, pred.treebag)
+resid.treebag <- pred.treebag - y.test
+hist(resid.treebag)
+```
+
+```{r}
+treebag.var.imp <- varImp(treebag)$importance
+names(treebag.var.imp) <- "importance"
+treebag.var.imp <- treebag.var.imp %>%
+  tibble::rownames_to_column() %>%
+  dplyr::rename("variable" = rowname) %>%
+  dplyr::arrange(importance) %>%
+  dplyr::mutate(variable = forcats::fct_inorder(variable))
+ggplot(treebag.var.imp) + 
+  geom_col(aes(x = variable, y = importance)) + 
+  coord_flip()
 ```
 
 
