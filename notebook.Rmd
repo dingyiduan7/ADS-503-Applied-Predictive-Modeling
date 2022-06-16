@@ -249,6 +249,14 @@ gbm
 plot(gbm)
 ```
 
+```{r}
+pred.gbm <- predict(gbm, X.test)
+rmse(y.test, pred.gbm)
+hist(pred.gbm)
+plot(y.test, pred.gbm)
+resid.gbm <- pred.gbm - y.test
+hist(resid.gbm)
+```
 
 
 
