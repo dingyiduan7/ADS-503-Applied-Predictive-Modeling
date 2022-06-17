@@ -1,0 +1,180 @@
+---
+title: "ADS 503 Team 4: Predicting Article Shares"
+output: html_notebook
+---
+
+# Load Data
+```{r}
+df <- read.csv("Datasets/OnlineNewsPopularity.csv")
+dim(df)
+summary(df)
+```
+The dataset has 39,644 samples and 61 variables. 
+
+# Missing Data
+```{r}
+sum(is.na(df))
+```
+
+None of the variables is missing any data so there is no need for imputation. 
+
+# Define Target and Predictors 
+```{r}
+df <- df[, names(df) != "url"] # drop the url column, which functions as a sample ID
+y <- df$shares # shares is the target variable 
+X <- df[, names(df) != "shares"] 
+```
+
+# Target Distribution 
+```{r}
+summary(y)
+par(mfrow = c(1, 2))
+hist(y)
+boxplot(y)
+```
+
+The target distribution is highly right-skewed. Let's try log transforming it. 
+```{r}
+summary(log(y))
+par(mfrow = c(1, 2))
+hist(log(y)) 
+boxplot(log(y))
+```
+
+The log of the target is much less skewed. Let's use the log-transformed version. 
+```{r}
+y <- log(y)
+```
+
+# Predictor Distributions 
+## Near-Zero Variance 
+```{r}
+library(caret)
+degen.cols <- nearZeroVar(X)
+for (i in degen.cols) {
+  col.name <- names(X)[i]
+  hist(X[, col.name], main = col.name, xlab = col.name)
+}
+```
+
+kw_min_max has near-zero variance so let's remove it. 
+```{r}
+X <- X[, -degen.cols]
+```
+
+## Skew 
+```{r}
+par(mfrow = c(3, 3))
+for (i in 1:ncol(X)) {
+  hist(
+    X[, i],
+    main = NULL,
+    xlab = colnames(X)[i]
+  )
+}
+```
+
+The predictors have widely varying ranges and many are quite skewed. We'll need to center and scale them before modeling. 
+
+## Correlations 
+### Binary Predictor Correlations 
+```{r}
+library(corrplot)
+X.bi <- Filter(function(x) all(x %in% c(0, 1)), X)
+X.non.bi <- X[, !names(X) %in% names(X.bi)]
+cor.bi <- cor(X.bi)
+corrplot(
+  cor.bi,
+  method = "square",
+  type = "upper",
+  order = "hclust"
+)
+```
+
+The only strong correlations among the binary predictors are between weekday_is_sunday and is_weekend and between weekday_is_saturday and is_weekend, which makes sense. 
+```{r}
+high.cor.bi <- findCorrelation(cor.bi, cutoff = .7) 
+names(X.bi)[high.cor.bi]
+X.bi <- X.bi[, -high.cor.bi] # remove is_weekend
+cor.bi.filtered <- cor(X.bi)
+corrplot(
+  cor.bi.filtered,
+  method = "square",
+  type = "upper"
+)
+```
+
+Remove weekday_is_sunday to avoid the dummy variable trap. Let's also check the data channel binary predictors for the dummy variable trap. 
+```{r}
+X.bi <- X.bi[, names(X.bi) != "weekday_is_sunday"]
+channels <- c(
+  "data_channel_is_world",
+  "data_channel_is_socmed",
+  "data_channel_is_tech",
+  "data_channel_is_bus",
+  "data_channel_is_entertainment",
+  "data_channel_is_lifestyle"
+)
+summary(apply(X[, channels], 1, sum)) # check if they always sum to 1 for every sample
+```
+The channel predictors do not always sum to 1, so they do not fall into the dummy variable trap. 
+
+### Non-Binary Predictor Correlations
+```{r}
+cor.non.bi <- cor(X.non.bi)
+corrplot(
+  cor.non.bi,
+  method = "square",
+  type = "upper",
+  tl.pos = "n"
+)
+```
+
+We can see some strong positive and negative correlations between the non-binary predictors. 
+```{r}
+high.cor.non.bi <- findCorrelation(cor.non.bi, cutoff = .7)
+length(high.cor.non.bi)
+names(X.non.bi)[high.cor.non.bi]
+```
+12 variables contribute to high pairwise correlation between the non-binary predictors. Let's remove them 
+```{r}
+X.non.bi <- X.non.bi[, -high.cor.non.bi]
+cor.non.bi.filtered <- cor(X.non.bi)
+corrplot(
+  cor.non.bi.filtered,
+  method = "square",
+  type = "upper",
+  tl.pos = "n"
+)
+```
+
+Let's update our master predictor matrix to only retain the non-problematic predictors. 
+```{r}
+cols.to.keep <- c(names(X.bi), names(X.non.bi))
+X <- X[, names(X) %in% cols.to.keep]
+```
+
+# Split the Data 
+```{r}
+set.seed(100)
+train.rows <- createDataPartition(y, p = .8, list = FALSE)
+y.train <- y[train.rows]
+y.test <- y[-train.rows]
+X.train <- X[train.rows, ]
+X.test <- X[-train.rows, ]
+idx <- createFolds(y.train, returnTrain = TRUE)
+ctrl <- trainControl(method = "cv", index = idx)
+```
+
+# Modeling 
+
+
+
+
+
+
+
+
+
+
+
