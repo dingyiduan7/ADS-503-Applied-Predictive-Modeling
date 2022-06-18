@@ -214,6 +214,7 @@ plot.var.imp(enet)
 
 ### Principal Component Regression (PCR)
 ```{r}
+set.seed(100)
 pcr <- train(
   x = X.train,
   y = y.train,
@@ -238,7 +239,32 @@ hist(resid.pcr)
 plot.var.imp(pcr)
 ```
 
+### Principal Least Squares (PLS)
+```{r}
+set.seed(100)
+pls <- train(
+  x = X.train,
+  y = y.train,
+  preProc = c("center", "scale"),
+  method = "pls",
+  tuneGrid = expand.grid(ncomp = 1:30),
+  trControl = ctrl
+)
+pls
+plot(pls)
+```
 
+```{r}
+pred.pls <- predict(pls, X.test)
+resid.pls <- pred.pls - y.test
+rmse(y.test, pred.pls)
+par(mfrow = c(2, 2))
+hist(pred.pls)
+plot(y.test, pred.pls, alpha = 0.1)
+lines(lowess(y.test, pred.pls), col = "red")
+hist(resid.pls)
+plot.var.imp(pls)
+```
 
 
 
