@@ -194,9 +194,25 @@ lines(lowess(y.test, pred.enet), col = "red")
 hist(resid.enet)
 ```
 
+```{r}
+library(tidyr)
+library(dplyr)
+plot.var.imp <- function(model) {
+  imp <- varImp(model)$importance 
+  names(imp) <- "importance"
+  df <- imp %>%
+    tibble::rownames_to_column() %>% 
+    dplyr::rename("variable" = rowname) %>% 
+    dplyr::arrange(importance) %>% 
+    dplyr::mutate(variable = forcats::fct_inorder(variable))
+  ggplot(df) + 
+    geom_col(aes(x = variable, y = importance)) + 
+    coord_flip()
+}
+plot.var.imp(enet)
+```
 
-
-
+### Multivariate Adaptive Regression Splines (MARS)
 
 
 
