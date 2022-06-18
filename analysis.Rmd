@@ -166,8 +166,33 @@ idx <- createFolds(y.train, returnTrain = TRUE)
 ctrl <- trainControl(method = "cv", index = idx)
 ```
 
-# Modeling 
+# Modeling
+## Linear Models 
+### Elastic Net
+```{r}
+enetGrid <- expand.grid(lambda = c(0, 0.01, .1),
+                        fraction = seq(0, 1, length = 10))
+set.seed(100)
+enet <- train(x = X.train, y = y.train,
+                         method = "enet",
+                         tuneGrid = enetGrid,
+                         trControl = ctrl,
+                         preProc = c("center", "scale"))
+enet
+plot(enet)
+```
 
+```{r}
+library(Metrics)
+pred.enet <- predict(enet, X.test)
+resid.enet <- pred.enet - y.test
+rmse(y.test, pred.enet)
+par(mfrow = c(2, 2))
+hist(pred.enet)
+plot(y.test, pred.enet, alpha = 0.1)
+lines(lowess(y.test, pred.enet), col = "red")
+hist(resid.enet)
+```
 
 
 
