@@ -189,7 +189,7 @@ resid.enet <- pred.enet - y.test
 rmse(y.test, pred.enet)
 par(mfrow = c(2, 2))
 hist(pred.enet)
-plot(y.test, pred.enet, alpha = 0.1)
+plot(y.test, pred.enet)
 lines(lowess(y.test, pred.enet), col = "red")
 hist(resid.enet)
 ```
@@ -234,7 +234,7 @@ resid.pcr <- pred.pcr - y.test
 rmse(y.test, pred.pcr)
 par(mfrow = c(2, 2))
 hist(pred.pcr)
-plot(y.test, pred.pcr, alpha = 0.1)
+plot(y.test, pred.pcr)
 lines(lowess(y.test, pred.pcr), col = "red")
 hist(resid.pcr)
 plot.var.imp(pcr)
@@ -261,7 +261,7 @@ resid.pls <- pred.pls - y.test
 rmse(y.test, pred.pls)
 par(mfrow = c(2, 2))
 hist(pred.pls)
-plot(y.test, pred.pls, alpha = 0.1)
+plot(y.test, pred.pls)
 lines(lowess(y.test, pred.pls), col = "red")
 hist(resid.pls)
 plot.var.imp(pls)
@@ -289,7 +289,7 @@ resid.knn <- pred.knn - y.test
 rmse(y.test, pred.knn)
 par(mfrow = c(2, 2))
 hist(pred.knn)
-plot(y.test, pred.knn, alpha = 0.1)
+plot(y.test, pred.knn)
 lines(lowess(y.test, pred.knn), col = "red")
 hist(resid.knn)
 plot.var.imp(knn)
@@ -315,7 +315,7 @@ resid.cart <- pred.cart - y.test
 rmse(y.test, pred.cart)
 par(mfrow = c(2, 2))
 hist(pred.cart)
-plot(y.test, pred.cart, alpha = 0.1)
+plot(y.test, pred.cart)
 lines(lowess(y.test, pred.cart), col = "red")
 hist(resid.cart)
 plot.var.imp(cart)
@@ -343,7 +343,7 @@ resid.gbm <- pred.gbm - y.test
 rmse(y.test, pred.gbm)
 par(mfrow = c(2, 2))
 hist(pred.gbm)
-plot(y.test, pred.gbm, alpha = 0.1)
+plot(y.test, pred.gbm)
 lines(lowess(y.test, pred.gbm), col = "red")
 hist(resid.gbm)
 ```
@@ -360,36 +360,68 @@ ggplot(gbm.imp.df) +
   coord_flip()
 ```
 
+# Compare Model Performance
+```{r}
+# create dataframe to contain all model results 
+models <- c("enet", "pcr", "pls", "knn", "cart", "gbm")
+results <- data.frame(row.names = models)
+results$RMSE.cv <- NA
+results$RMSE.cv.sd <- NA
+results$RMSE.test <- NA
 
+# add enet results 
+results.enet <- enet$results %>% 
+  filter(lambda == enet$bestTune$lambda & fraction == enet$bestTune$fraction) %>% 
+  select(RMSE, RMSESD)
 
+results["enet", "RMSE.cv"] <- results.enet$RMSE
+results["enet", "RMSE.cv.sd"] <- results.enet$RMSESD
+results["enet", "RMSE.test"] <- rmse(y.test, pred.enet)
 
+# add PCR results 
+results.pcr <- pcr$results %>% 
+  filter(ncomp == pcr$bestTune$ncomp) %>% 
+  select(RMSE, RMSESD) 
 
+results["pcr", "RMSE.cv"] <- results.pcr$RMSE 
+results["pcr", "RMSE.cv.sd"] <- results.pcr$RMSESD
+results["pcr", "RMSE.test"] <- rmse(y.test, pred.pcr)
 
+# add PLS results 
+results.pls <- pls$results %>% 
+  filter(ncomp == pls$bestTune$ncomp) %>% 
+  select(RMSE, RMSESD)
 
+results["pls", "RMSE.cv"] <- results.pls$RMSE 
+results["pls", "RMSE.cv.sd"] <- results.pls$RMSESD
+results["pls", "RMSE.test"] <- rmse(y.test, pred.pls)
 
+# add KNN results 
+results.knn <- knn$results %>% 
+  filter(k == knn$bestTune$k) %>%
+  select(RMSE, RMSESD)
 
+results["knn", "RMSE.cv"] <- results.knn$RMSE
+results["knn", "RMSE.cv.sd"] <- results.knn$RMSESD
+results["knn", "RMSE.test"] <- rmse(y.test, pred.knn)
 
+# add CART results 
+results.cart <- cart$results %>% 
+  filter(cp == cart$bestTune$cp) %>% 
+  select(RMSE, RMSESD)
 
+results["cart", "RMSE.cv"] <- results.cart$RMSE
+results["cart", "RMSE.cv.sd"] <- results.cart$RMSESD
+results["cart", "RMSE.test"] <- rmse(y.test, pred.cart)
 
+# add GBM results 
+results.gbm <- gbm$results %>% 
+  filter(shrinkage == gbm$bestTune$shrinkage & interaction.depth == gbm$bestTune$interaction.depth) %>% 
+  select(RMSE, RMSESD)
 
+results["gbm", "RMSE.cv"] <- results.gbm$RMSE
+results["gbm", "RMSE.cv.sd"] <- results.gbm$RMSESD
+results["gbm", "RMSE.test"] <- rmse(y.test, pred.gbm)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+results
+```
