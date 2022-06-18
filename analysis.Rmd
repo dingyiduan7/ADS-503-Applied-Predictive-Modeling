@@ -294,7 +294,31 @@ hist(resid.knn)
 plot.var.imp(knn)
 ```
 
+### Classification and Regression Tree (CART)
+```{r}
+set.seed(100)
+cart <- train(
+  x = X.train,
+  y = y.train,
+  preProc = c("center", "scale"),
+  method = "rpart",
+  tuneGrid = expand.grid(cp = seq(0.001, 0.1, 0.01))
+)
+cart 
+plot(cart)
+```
 
+```{r}
+pred.cart <- predict(cart, X.test)
+resid.cart <- pred.cart - y.test
+rmse(y.test, pred.cart)
+par(mfrow = c(2, 2))
+hist(pred.cart)
+plot(y.test, pred.cart, alpha = 0.1)
+lines(lowess(y.test, pred.cart), col = "red")
+hist(resid.cart)
+plot.var.imp(cart)
+```
 
 
 
