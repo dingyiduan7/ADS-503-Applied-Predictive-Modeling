@@ -213,7 +213,30 @@ plot.var.imp(enet)
 ```
 
 ### Multivariate Adaptive Regression Splines (MARS)
+```{r}
+set.seed(0)
+mars <- train(
+  x = X.train,
+  y = y.train,
+  method = "earth",
+  tuneGrid = expand.grid(degree = 1, nprune = 2:10),
+  trControl = ctrl
+)
+mars
+plot(mars)
+```
 
+```{r}
+pred.mars <- predict(mars, X.test)
+resid.mars <- pred.mars - y.test
+rmse(y.test, pred.mars)
+par(mfrow = c(2, 2))
+hist(pred.mars)
+plot(y.test, pred.mars, alpha = 0.1)
+lines(lowess(y.test, pred.mars), col = "red")
+hist(resid.mars)
+plot.var.imp(mars)
+```
 
 
 
