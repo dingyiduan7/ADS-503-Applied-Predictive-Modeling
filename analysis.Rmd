@@ -266,8 +266,33 @@ hist(resid.pls)
 plot.var.imp(pls)
 ```
 
+## Non-Linear Models 
+### K-Nearest Neighbors (k-NN)
+```{r}
+set.seed(100)
+knn <- train(
+  x = X.train,
+  y = y.train,
+  preProc = c("center", "scale"),
+  method = "knn",
+  tuneGrid = expand.grid(k = 1:10),
+  trControl = ctrl
+)
+knn
+plot(knn)
+```
 
-
+```{r}
+pred.knn <- predict(knn, X.test)
+resid.knn <- pred.knn - y.test
+rmse(y.test, pred.knn)
+par(mfrow = c(2, 2))
+hist(pred.knn)
+plot(y.test, pred.knn, alpha = 0.1)
+lines(lowess(y.test, pred.knn), col = "red")
+hist(resid.knn)
+plot.var.imp(knn)
+```
 
 
 
