@@ -46,6 +46,33 @@ The log of the target is much less skewed. Let's use the log-transformed version
 y <- log(y)
 ```
 
+## Target-Predictor Correlations
+```{r}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+x <- names(X)
+correlations <- data.frame(x)
+correlations$r <- apply(correlations, 1, function(row) cor(X[, row["x"]], y)) # correlation between each predictor and the target
+correlations <- correlations %>% 
+  dplyr::arrange(r) %>% 
+  dplyr::mutate(x = forcats::fct_inorder(x))
+ggplot(correlations) + 
+  geom_col(aes(x = x, y = r)) + 
+  coord_flip()
+```
+
+None of the target-predictor correlations is very strong. The strongest positive correlation is with kw_avg_avg, while the strongest negative correlation is with LDA_02. 
+```{r}
+par(mfrow = c(1, 2))
+
+plot(X[, "kw_avg_avg"], y, xlab = "kw_avg_avg")
+lines(lowess(X[, "kw_avg_avg"], y), col = "red")
+
+plot(X[, "LDA_02"], y, xlab = "LDA_02")
+lines(lowess(X[, "LDA_02"], y), col = "red")
+```
+
 # Predictor Distributions 
 ## Near-Zero Variance 
 ```{r}
@@ -195,9 +222,6 @@ hist(resid.enet)
 ```
 
 ```{r}
-library(tidyr)
-library(dplyr)
-library(ggplot2)
 plot.var.imp <- function(model) {
   imp <- varImp(model)$importance 
   names(imp) <- "importance"
