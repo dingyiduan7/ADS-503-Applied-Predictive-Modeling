@@ -213,7 +213,7 @@ plot(enet)
 ```{r}
 library(Metrics)
 pred.enet <- predict(enet, X.test)
-resid.enet <- pred.enet - y.test
+resid.enet <- y.test - pred.enet
 rmse(y.test, pred.enet)
 par(mfrow = c(2, 2))
 hist(pred.enet)
@@ -255,7 +255,7 @@ plot(pcr)
 
 ```{r}
 pred.pcr <- predict(pcr, X.test)
-resid.pcr <- pred.pcr - y.test
+resid.pcr <- y.test - pred.pcr
 rmse(y.test, pred.pcr)
 par(mfrow = c(2, 2))
 hist(pred.pcr)
@@ -282,7 +282,7 @@ plot(pls)
 
 ```{r}
 pred.pls <- predict(pls, X.test)
-resid.pls <- pred.pls - y.test
+resid.pls <- y.test - pred.pls
 rmse(y.test, pred.pls)
 par(mfrow = c(2, 2))
 hist(pred.pls)
@@ -310,7 +310,7 @@ plot(knn)
 
 ```{r}
 pred.knn <- predict(knn, X.test)
-resid.knn <- pred.knn - y.test
+resid.knn <- y.test - pred.knn
 rmse(y.test, pred.knn)
 par(mfrow = c(2, 2))
 hist(pred.knn)
@@ -336,7 +336,7 @@ plot(cart)
 
 ```{r}
 pred.cart <- predict(cart, X.test)
-resid.cart <- pred.cart - y.test
+resid.cart <- y.test - pred.cart
 rmse(y.test, pred.cart)
 par(mfrow = c(2, 2))
 hist(pred.cart)
@@ -364,7 +364,7 @@ plot(gbm)
 
 ```{r}
 pred.gbm <- predict(gbm, X.test)
-resid.gbm <- pred.gbm - y.test
+resid.gbm <- y.test - pred.gbm
 rmse(y.test, pred.gbm)
 par(mfrow = c(2, 2))
 hist(pred.gbm)
