@@ -30,7 +30,7 @@ X <- df[, names(df) != "shares"]
 summary(y)
 par(mfrow = c(1, 2))
 hist(y)
-boxplot(y)
+boxplot(y, main = "Boxplot of y")
 ```
 
 The target distribution is highly right-skewed. Let's try log transforming it. 
@@ -38,7 +38,7 @@ The target distribution is highly right-skewed. Let's try log transforming it.
 summary(log(y))
 par(mfrow = c(1, 2))
 hist(log(y)) 
-boxplot(log(y))
+boxplot(log(y), main = "Boxplot of log(y)")
 ```
 
 The log of the target is much less skewed. Let's use the log-transformed version. 
@@ -60,6 +60,7 @@ correlations <- correlations %>%
 ggplot(correlations) + 
   geom_col(aes(x = x, y = r)) + 
   coord_flip()
+correlations
 ```
 
 None of the target-predictor correlations is very strong. The strongest positive correlation is with kw_avg_avg, while the strongest negative correlation is with LDA_02. 
@@ -386,66 +387,98 @@ ggplot(gbm.imp.df) +
 
 # Compare Model Performance
 ```{r}
+# function to calculate R-squared 
+r.squared <- function(actual, predicted) {
+  actual.mean <- mean(actual)
+  RSS <- sum((actual - predicted)^2) 
+  TSS <- sum((actual - actual.mean)^2)
+  R2 <- 1 - (RSS/TSS)
+  return(R2)
+}
+```
+
+```{r}
 # create dataframe to contain all model results 
 models <- c("enet", "pcr", "pls", "knn", "cart", "gbm")
 results <- data.frame(row.names = models)
 results$RMSE.cv <- NA
 results$RMSE.cv.sd <- NA
 results$RMSE.test <- NA
+results$Rsquared.cv <- NA
+results$Rsquared.cv.sd <- NA
+results$Rsquared.test <- NA
 
 # add enet results 
 results.enet <- enet$results %>% 
   filter(lambda == enet$bestTune$lambda & fraction == enet$bestTune$fraction) %>% 
-  select(RMSE, RMSESD)
+  select(RMSE, RMSESD, Rsquared, RsquaredSD)
 
 results["enet", "RMSE.cv"] <- results.enet$RMSE
 results["enet", "RMSE.cv.sd"] <- results.enet$RMSESD
 results["enet", "RMSE.test"] <- rmse(y.test, pred.enet)
+results["enet", "Rsquared.cv"] <- results.enet$Rsquared
+results["enet", "Rsquared.cv.sd"] <- results.enet$RsquaredSD
+results["enet", "Rsquared.test"] <- r.squared(y.test, pred.enet)
 
 # add PCR results 
 results.pcr <- pcr$results %>% 
   filter(ncomp == pcr$bestTune$ncomp) %>% 
-  select(RMSE, RMSESD) 
+  select(RMSE, RMSESD, Rsquared, RsquaredSD) 
 
 results["pcr", "RMSE.cv"] <- results.pcr$RMSE 
 results["pcr", "RMSE.cv.sd"] <- results.pcr$RMSESD
 results["pcr", "RMSE.test"] <- rmse(y.test, pred.pcr)
+results["pcr", "Rsquared.cv"] <- results.pcr$Rsquared
+results["pcr", "Rsquared.cv.sd"] <- results.pcr$RsquaredSD
+results["pcr", "Rsquared.test"] <- r.squared(y.test, pred.pcr)
 
 # add PLS results 
 results.pls <- pls$results %>% 
   filter(ncomp == pls$bestTune$ncomp) %>% 
-  select(RMSE, RMSESD)
+  select(RMSE, RMSESD, Rsquared, RsquaredSD)
 
 results["pls", "RMSE.cv"] <- results.pls$RMSE 
 results["pls", "RMSE.cv.sd"] <- results.pls$RMSESD
 results["pls", "RMSE.test"] <- rmse(y.test, pred.pls)
+results["pls", "Rsquared.cv"] <- results.pls$Rsquared 
+results["pls", "Rsquared.cv.sd"] <- results.pls$RsquaredSD
+results["pls", "Rsquared.test"] <- r.squared(y.test, pred.pls)
 
 # add KNN results 
 results.knn <- knn$results %>% 
   filter(k == knn$bestTune$k) %>%
-  select(RMSE, RMSESD)
+  select(RMSE, RMSESD, Rsquared, RsquaredSD)
 
 results["knn", "RMSE.cv"] <- results.knn$RMSE
 results["knn", "RMSE.cv.sd"] <- results.knn$RMSESD
 results["knn", "RMSE.test"] <- rmse(y.test, pred.knn)
+results["knn", "Rsquared.cv"] <- results.knn$Rsquared
+results["knn", "Rsquared.cv.sd"] <- results.knn$RsquaredSD
+results["knn", "Rsquared.test"] <- r.squared(y.test, pred.knn)
 
 # add CART results 
 results.cart <- cart$results %>% 
   filter(cp == cart$bestTune$cp) %>% 
-  select(RMSE, RMSESD)
+  select(RMSE, RMSESD, Rsquared, RsquaredSD)
 
 results["cart", "RMSE.cv"] <- results.cart$RMSE
 results["cart", "RMSE.cv.sd"] <- results.cart$RMSESD
 results["cart", "RMSE.test"] <- rmse(y.test, pred.cart)
+results["cart", "Rsquared.cv"] <- results.cart$Rsquared
+results["cart", "Rsquared.cv.sd"] <- results.cart$RsquaredSD
+results["cart", "Rsquared.test"] <- r.squared(y.test, pred.cart)
 
 # add GBM results 
 results.gbm <- gbm$results %>% 
   filter(shrinkage == gbm$bestTune$shrinkage & interaction.depth == gbm$bestTune$interaction.depth) %>% 
-  select(RMSE, RMSESD)
+  select(RMSE, RMSESD, Rsquared, RsquaredSD)
 
 results["gbm", "RMSE.cv"] <- results.gbm$RMSE
 results["gbm", "RMSE.cv.sd"] <- results.gbm$RMSESD
 results["gbm", "RMSE.test"] <- rmse(y.test, pred.gbm)
+results["gbm", "Rsquared.cv"] <- results.gbm$Rsquared
+results["gbm", "Rsquared.cv.sd"] <- results.gbm$RsquaredSD
+results["gbm", "Rsquared.test"] <- r.squared(y.test, pred.gbm)
 
 results
 ```
